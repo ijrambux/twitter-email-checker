@@ -1,14 +1,8 @@
 export default async function handler(req, res) {
     const { emails } = req.body;
 
-    let results = [];
+    // فحص وهمي (أي إيميل فيه حرف x نعتبره مربوط)
+    const linked = emails.filter(e => e.toLowerCase().includes("x"));
 
-    for (let email of emails) {
-        // فقط مثال لفحص وجود الإيميل في X
-        const exists = email.toLowerCase().includes("x.com") ? true : false;
-
-        if (exists) results.push(email);
-    }
-
-    res.status(200).json(results);
+    res.status(200).json(linked);
 }
