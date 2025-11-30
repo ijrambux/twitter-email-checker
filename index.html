@@ -1,23 +1,115 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>Twitter Email Checker</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <title>فحص الإيميلات في منصة X</title>
+    <style>
+        body {
+            font-family: "Tahoma", sans-serif;
+            background: #f3f3f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            color: #222;
+            margin-bottom: 10px;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 420px;
+            text-align: center;
+        }
+
+        input[type="file"] {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #007bff;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056d6;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+    </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1>فحص الإيميلات لمعرفة إذا كانت موجودة في منصة X</h1>
-        <p>قم برفع ملف combo (email:password) وسيتم استخراج الإيميلات فقط وفحصها.</p>
 
-        <input type="file" id="comboFile">
-        <button onclick="processCombo()">بدء الفحص</button>
+<h1>فحص الإيميلات في منصة X</h1>
 
-        <div id="results"></div>
-    </div>
+<div class="box">
+    <p>إرفع ملف combo (email:password) وسيتم استخراج الإيميلات فقط وفحصها.</p>
 
-    <script src="script.js"></script>
+    <input type="file" id="comboFile" accept=".txt">
+    <button onclick="startCheck()">بدء الفحص</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+async function startCheck() {
+    const fileInput = document.getElementById("comboFile");
+    const resultBox = document.getElementById("result");
+
+    if (!fileInput.files.length) {
+        alert("يرجى اختيار ملف!");
+        return;
+    }
+
+    const file = fileInput.files[0];
+    let text = await file.text();
+
+    // استخراج الإيميلات فقط من combo
+    const lines = text.split("\n");
+    const emails = lines.map(l => l.split(":")[0].trim());
+
+    resultBox.innerHTML = "جاري الفحص... الرجاء الانتظار";
+
+    const response = await fetch("/api/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ emails })
+    });
+
+    const checked = await response.json();
+
+    // إنشاء ملف تحمليه
+    const blob = new Blob([checked.join("\n")], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    resultBox.innerHTML = `
+        ✔ تم الفحص<br>
+        <a href="${url}" download="result.txt">تحميل النتائج</a>
+    `;
+}
+</script>
+
 </body>
 </html>
-
