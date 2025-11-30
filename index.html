@@ -1,41 +1,23 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>X Email Checker</title>
-<style>
-body { font-family: sans-serif; background:#f5f5f5; text-align:center; padding-top:60px; direction:rtl; }
-.card { background:white; width:350px; margin:auto; padding:25px; border-radius:10px; box-shadow:0 0 10px #ccc; }
-input, textarea { width:100%; padding:10px; margin-top:10px; border:1px solid #aaa; border-radius:5px; }
-button { width:100%; padding:10px; margin-top:15px; background:black; color:white; border:none; border-radius:5px; cursor:pointer; }
-#output { margin-top:20px; white-space:pre; text-align:left; direction:ltr; background:#fff; padding:10px; border-radius:5px; box-shadow:0 0 5px #aaa; }
-</style>
+    <meta charset="UTF-8">
+    <title>Twitter Email Checker</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+    <div class="container">
+        <h1>فحص الإيميلات لمعرفة إذا كانت موجودة في منصة X</h1>
+        <p>قم برفع ملف combo (email:password) وسيتم استخراج الإيميلات فقط وفحصها.</p>
 
-<h1>Checker X</h1>
+        <input type="file" id="comboFile">
+        <button onclick="processCombo()">بدء الفحص</button>
 
-<div class="card">
-<textarea id="combo" rows="7" placeholder="ضع الإيميل أو مجموعة كومبو"></textarea>
-<button onclick="startCheck()">فحص</button>
-</div>
+        <div id="results"></div>
+    </div>
 
-<pre id="output"></pre>
-
-<script>
-async function startCheck() {
-    let lines = document.getElementById("combo").value.trim().split("\n");
-    let out = "";
-    for (let line of lines) {
-        let email = line.trim();
-        if (!email) continue;
-        let res = await fetch("/api/check?email=" + encodeURIComponent(email));
-        let data = await res.json();
-        out += `${email} → ${data.status}\n`;
-        document.getElementById("output").textContent = out;
-    }
-}
-</script>
-
+    <script src="script.js"></script>
 </body>
 </html>
+
