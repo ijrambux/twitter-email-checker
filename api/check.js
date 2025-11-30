@@ -1,22 +1,14 @@
 export default async function handler(req, res) {
-    let email = req.query.email;
-    if (!email) return res.json({ error: "no email" });
+    const { emails } = req.body;
 
-    // بحث علني في تويتر/X
-    let searchUrl = `https://duckduckgo.com/?q="${email}"+site:twitter.com`;
+    let results = [];
 
-    try {
-        let response = await fetch(searchUrl);
-        let text = await response.text();
+    for (let email of emails) {
+        // فقط مثال لفحص وجود الإيميل في X
+        const exists = email.toLowerCase().includes("x.com") ? true : false;
 
-        let exists = !text.includes("no results");
-
-        res.json({
-            email,
-            exists
-        });
-
-    } catch (e) {
-        res.json({ email, exists: false });
+        if (exists) results.push(email);
     }
+
+    res.status(200).json(results);
 }
